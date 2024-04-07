@@ -28,16 +28,16 @@ onMounted(() => {
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">首页<span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/home">首页<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">资料下载</a>
+          <a class="nav-link" href="/document">资料下载</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">管理</a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">用户管理</a>
-            <a class="dropdown-item" href="#">管理员管理</a>
+            <a class="dropdown-item" href="/user">用户管理</a>
+            <a class="dropdown-item" href="/admin">管理员管理</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#">开发中...</a>
           </div>
