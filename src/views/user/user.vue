@@ -1,4 +1,26 @@
-<script setup>
+<script lang="ts" setup>
+import { toRaw } from '@vue/reactivity'
+import request from '@/utils/request'
+import { ref,onMounted } from 'vue'
+let userList = ref([])
+let userCountpage = ref(1)
+let currentPage = ref(1)
+const pageSize = ref(10)
+//利用 async和await
+async function getUserList(pagenumber) {
+  const res = await request.post('/userList/', {
+    page: pagenumber,
+  })
+  userList.value = toRaw(res.data.data)
+  userCountpage.value = res.data.count
+}
+
+onMounted(() => {
+  getUserList(1)
+})
+const handleCurrentChange = (val: number) => {
+  getUserList(val)
+}
 
 </script>
 
@@ -40,23 +62,38 @@
   </div>
     <el-tabs type="border-card">
       <el-tab-pane label="用户列表">
+          <el-row>
+            <el-col :span="5"><el-input v-model="searchname" placeholder="请输入用户名进行搜索"></el-input></el-col>
+            <el-col :span="12"><el-button type="primary" @click="search">搜索</el-button></el-col>
+          </el-row>
+        <div style="margin-top: 20px">
         <table style="width: 1600px">
           <tr class="table-head">
-            <th>id</th>
+            <th>name</th>
             <th>手机号</th>
             <th>注册时间</th>
             <th>操作</th>
           </tr>
-          <tr class="table-body">
-            <td>15552</td>
-            <td>2300758808@qq.com</td>
-            <td>2222-22-22 22:22:22</td>
+          <tr class="table-body" v-for="item in userList" :key="item.name">
+            <td>{{ item.name }}</td>
+            <td>{{ item.phone }}</td>
+            <td>{{ item.time}}</td>
             <td>
               <el-button type="text" size="default" @click="ban">封禁</el-button>
               <el-button type="text" size="default" @click="grow">设为管理员</el-button>
             </td>
           </tr>
         </table>
+        </div>
+          <div class="demo-pagination-block" style="margin-top: 20px">
+            <el-pagination
+                v-model:current-page="currentPage"
+                v-model:page-size="pageSize"
+                layout="prev, pager, next, jumper"
+                :total="userCountpage"
+                @current-change="handleCurrentChange"
+            />
+          </div>
       </el-tab-pane>
       <el-tab-pane label="封禁用户">Config
       </el-tab-pane>
@@ -81,7 +118,6 @@
   margin: 0;
 }
 .table-head{
-  border: 1px solid red;
   background-color: #f2f2f2;
   width: 1600px;
   height: 20px;
@@ -91,7 +127,7 @@
   width: 25%;
 }
 .table-body{
-  border: 1px solid red;
+  border: 1px solid bisque;
   width: 1600px;
   height: 20px;
   text-align: center;
