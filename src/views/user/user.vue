@@ -1,65 +1,84 @@
 <script lang="ts" setup>
+import homeHead from '@/components/homeHead.vue'
 import { toRaw } from '@vue/reactivity'
 import request from '@/utils/request'
 import { ref,onMounted } from 'vue'
+let banitem = ref()
 let userList = ref([])
-let userCountpage = ref(1)
+let userCountpage = ref()
 let currentPage = ref(1)
 const pageSize = ref(10)
-//利用 async和await
+let banReason = ref('')
+let showban= ref(false)
+//普通用户列表功能
+//展示列表
+
 async function getUserList(pagenumber) {
-  const res = await request.post('/userList/', {
-    page: pagenumber,
-  })
+  const res = await request.get(`/userList/?page=${pagenumber}`)
   userList.value = toRaw(res.data.data)
   userCountpage.value = res.data.count
 }
-
 onMounted(() => {
   getUserList(1)
 })
+//展示点击的列表页面
 const handleCurrentChange = (val: number) => {
+  currentPage.value = val
   getUserList(val)
+  console.log(val)
 }
+//封禁功能
+function ban(item) {
+  banitem = item
+}
+async function checkBan(item) {
+  try {
+    const res = await request.post('/userList/', {
+      phone: item.phone, reason: banReason.value
+    })
+    alert(res.data.message)
+    handleCurrentChange(currentPage.value)
+    showban.value = false
+  }catch (error) {
+    console.log(error)
+  }
+}
+//封禁用户列表功能
+let bancurrentPage = ref(1)
+let banuserList = ref([])
+let banCountpage = ref(1)
+async function getbanList(pagenumber) {
+  try {
+  const res = await request.get(`/banList/?page=${pagenumber}`)
+  banuserList.value = toRaw(res.data.data)
+  banCountpage.value = res.data.count
+}catch (error) {
+    console.log(error)
+  }}
+onMounted(() => {
+  getbanList(1)
+})
 
+async function unban(item) {
+  try {
+    const res = await request.post('/banList/', {
+      phone: item.phone
+    })
+    alert(res.data.message)
+    banhandleCurrentChange(bancurrentPage.value)
+  } catch (error) {
+    console.log(error)
+  }
+}
+const banhandleCurrentChange = (val: number) => {
+  bancurrentPage.value = val
+  getbanList(val)
+}
+//利用 async和await
 </script>
 
 <template>
-  <div class="navbar navbar-expand-lg  bg-light navbar-light,menuRight headImg" >
-    <span class="navbar-brand headWord"  >用户管理</span>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="/home">首页<span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/document">资料下载</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">管理</a>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="/user">用户管理</a>
-            <a class="dropdown-item" href="/admin">管理员管理</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">开发中...</a>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <a href="/login"><el-button type="primary" >注册</el-button></a>
-    <el-dropdown >
-        <span class="el-dropdown-link" style="margin-right: 10px;margin-left: 10px;color: white">
-          xxxx<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item>修改密码</el-dropdown-item>
-          <el-dropdown-item>成绩分析</el-dropdown-item>
-          <el-dropdown-item>注销</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
-  </div>
+  <homeHead></homeHead>
     <el-tabs type="border-card">
       <el-tab-pane label="用户列表">
           <el-row>
@@ -79,7 +98,7 @@ const handleCurrentChange = (val: number) => {
             <td>{{ item.phone }}</td>
             <td>{{ item.time}}</td>
             <td>
-              <el-button type="text" size="default" @click="ban">封禁</el-button>
+              <el-button type="text" size="default" @click="showban=true,ban(item)">封禁</el-button>
               <el-button type="text" size="default" @click="grow">设为管理员</el-button>
             </td>
           </tr>
@@ -87,35 +106,65 @@ const handleCurrentChange = (val: number) => {
         </div>
           <div class="demo-pagination-block" style="margin-top: 20px">
             <el-pagination
-                v-model:current-page="currentPage"
-                v-model:page-size="pageSize"
+                v-model:current-page="bancurrentPage"
+                v-model:page-size="banpageSize"
                 layout="prev, pager, next, jumper"
                 :total="userCountpage"
                 @current-change="handleCurrentChange"
             />
           </div>
+        <div v-if="showban" style="position: fixed;top: 30%;left: 40%;
+          width:350px;height: 250px; background-color: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); ">
+          <el-input v-model="banReason" placeholder="请输入封禁原因" style="margin-top: 20px;margin-left: 40px;width: 250px;height: 30px;"></el-input>
+            <el-form-item style="position: absolute;top: 200px;left: 100px;">
+              <el-button type="primary" @click="checkBan(banitem)">确定</el-button>
+              <el-button type="primary" @click="showban=false">取消</el-button>
+            </el-form-item>
+        </div>
       </el-tab-pane>
-      <el-tab-pane label="封禁用户">Config
+      <el-tab-pane label="封禁用户">
+        <el-row>
+          <el-col :span="5"><el-input v-model="searchBanname" placeholder="请输入用户名进行搜索"></el-input></el-col>
+          <el-col :span="12"><el-button type="primary" @click="bansearch">搜索</el-button></el-col>
+        </el-row>
+        <div style="margin-top: 20px">
+          <table style="width: 1600px">
+            <tr class="bantable-head">
+              <th>name</th>
+              <th>手机号</th>
+              <th>封禁时间</th>
+              <th>原因</th>
+              <th>操作</th>
+            </tr>
+            <tr class="bantable-body" v-for="item in banuserList" :key="item.name">
+              <td>{{ item.name }}</td>
+              <td>{{ item.phone }}</td>
+              <td>{{ item.time}}</td>
+              <td>{{ item.reason }}</td>
+              <td>
+                <el-button type="text" size="default" @click="unban(item)">解封</el-button>
+              </td>
+            </tr>
+          </table>
+        <div class="demo-pagination-block" style="margin-top: 20px">
+          <el-pagination
+              v-model:current-page="bancurrentPage"
+              v-model:page-size="pageSize"
+              layout="prev, pager, next, jumper"
+              :total="banCountpage"
+              @current-change="banhandleCurrentChange"
+          />
+        </div>
+          </div>
       </el-tab-pane>
     </el-tabs>
 </template>
 
 <style scoped>
-.headWord{
-  font-size: 24px;
-  color: white;
-  font-weight: bold;
-  margin-left: 10px
-}
 .headImg{
   background-image: url('https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_640.jpg')
-}
-.el-carousel__item h3 {
-  display: flex;
-  color: #475669;
-  opacity: 0.75;
-  line-height: 300px;
-  margin: 0;
 }
 .table-head{
   background-color: #f2f2f2;
@@ -135,5 +184,22 @@ const handleCurrentChange = (val: number) => {
 .table-body td{
   width: 25%;
 }
-
+.bantable-head{
+  background-color: #f2f2f2;
+  width: 1600px;
+  height: 20px;
+  text-align: center;
+}
+.bantable-head th{
+  width: 20%;
+}
+.bantable-body{
+  border: 1px solid bisque;
+  width: 1600px;
+  height: 20px;
+  text-align: center;
+}
+.bantable-body td{
+  width: 20%;
+}
 </style>
