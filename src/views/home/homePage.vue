@@ -1,5 +1,4 @@
 <script setup>
-import homeHead from '@/components/homeHead.vue'
 import { ref, onMounted} from 'vue'
 let imgList = ref(["src/assets/img1.jpg","src/assets/img2.jpg","src/assets/img3.jpg","src/assets/img4.jpg"])
 
@@ -24,7 +23,6 @@ onMounted(() => {
 </script>
 
 <template>
- <homeHead></homeHead>
   <div class="container">
     <el-carousel height="500px" indicator-position="outside">
       <el-carousel-item v-for="item in imgList" :key="item">

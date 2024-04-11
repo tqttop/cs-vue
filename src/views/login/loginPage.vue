@@ -108,7 +108,7 @@ const login = async () => {
     const res = await request.post('/login/', {'phone': formModel.value.phone, 'password': formModel.value.password})
     alert(res.data.message);
     if (res.data.success) {
-      router.push({ name: 'home' })
+      router.push({ name: 'layout' })
       }
     else {
       router.push({ name: 'login' })

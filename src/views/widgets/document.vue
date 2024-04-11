@@ -3,7 +3,9 @@
 </script>
 
 <template>
-<div>这是资料下载模块</div>
+<div><a href="/admin">管理员</a></div>
+    <div>文档</div>
+
 </template>
 
 <style scoped>

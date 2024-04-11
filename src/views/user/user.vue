@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import homeHead from '@/components/homeHead.vue'
 import { toRaw } from '@vue/reactivity'
 import request from '@/utils/request'
-import { ref,onMounted } from 'vue'
+import { ref,onMounted} from 'vue'
 let banitem = ref()
 let userList = ref([])
 let userCountpage = ref()
@@ -13,14 +12,17 @@ let showban= ref(false)
 //普通用户列表功能
 //展示列表
 
-async function getUserList(pagenumber) {
-  const res = await request.get(`/userList/?page=${pagenumber}`)
+async function getUserList(item) {
+  try {
+  const res = await request.get(`/userList/?page=${item}`)
   userList.value = toRaw(res.data.data)
   userCountpage.value = res.data.count
-}
-onMounted(() => {
-  getUserList(1)
-})
+}catch (error) {
+  console.log(error)
+}}
+
+getUserList(currentPage.value)
+
 //展示点击的列表页面
 const handleCurrentChange = (val: number) => {
   currentPage.value = val
@@ -34,10 +36,12 @@ function ban(item) {
 async function checkBan(item) {
   try {
     const res = await request.post('/userList/', {
-      phone: item.phone, reason: banReason.value
+      name: item.name, reason: banReason.value
     })
     alert(res.data.message)
-    handleCurrentChange(currentPage.value)
+    getUserList(currentPage.value)
+    getbanList(1)
+    banReason.value = ''
     showban.value = false
   }catch (error) {
     console.log(error)
@@ -45,6 +49,7 @@ async function checkBan(item) {
 }
 //封禁用户列表功能
 let bancurrentPage = ref(1)
+let banpageSize = ref(10)
 let banuserList = ref([])
 let banCountpage = ref(1)
 async function getbanList(pagenumber) {
@@ -55,35 +60,78 @@ async function getbanList(pagenumber) {
 }catch (error) {
     console.log(error)
   }}
-onMounted(() => {
-  getbanList(1)
-})
 
-async function unban(item) {
-  try {
-    const res = await request.post('/banList/', {
-      phone: item.phone
-    })
+getbanList(1)
+
+function unban(item) {
+    request.post('/banList/', {
+     name: item.name
+    }).then(res => {
     alert(res.data.message)
     banhandleCurrentChange(bancurrentPage.value)
-  } catch (error) {
+  }).catch(error => {
     console.log(error)
-  }
+  })
 }
 const banhandleCurrentChange = (val: number) => {
   bancurrentPage.value = val
   getbanList(val)
 }
+
+
+let searchname = ref('')
+//搜索功能
+function search() {
+  request.post('/search/', {
+    name: searchname.value
+  }).then(res => {
+    userList.value = toRaw(res.data.data)
+    userCountpage.value = res.data.count
+}).catch(error => {
+    console.log(error)
+  })
+}
+
+function remake() {
+  searchname.value = ''
+  getUserList(currentPage.value)
+}
+
+
+function grow(item) {
+  request.post('/grow/', {
+    name: item.name
+  }).then(res => {
+    alert(res.data.message)
+    getUserList(currentPage.value)
+  }).catch(error => {
+    console.log(error)
+  })
+}
 //利用 async和await
 </script>
 
 <template>
-  <homeHead></homeHead>
+  <div>
+    <el-dropdown >
+        <span class="el-dropdown-link" style="margin-right: 10px;margin-left: 10px;color: white">
+          xxxx<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item>修改密码</el-dropdown-item>
+          <el-dropdown-item>成绩分析</el-dropdown-item>
+          <el-dropdown-item>注销</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+  </div>
     <el-tabs type="border-card">
       <el-tab-pane label="用户列表">
           <el-row>
             <el-col :span="5"><el-input v-model="searchname" placeholder="请输入用户名进行搜索"></el-input></el-col>
-            <el-col :span="12"><el-button type="primary" @click="search">搜索</el-button></el-col>
+            <el-col :span="6"><el-button type="primary" @click="search">搜索</el-button></el-col>
+            <el-col :span="6"><el-button type="primary" @click="remake">重置</el-button></el-col>
           </el-row>
         <div style="margin-top: 20px">
         <table style="width: 1600px">
@@ -98,16 +146,16 @@ const banhandleCurrentChange = (val: number) => {
             <td>{{ item.phone }}</td>
             <td>{{ item.time}}</td>
             <td>
-              <el-button type="text" size="default" @click="showban=true,ban(item)">封禁</el-button>
-              <el-button type="text" size="default" @click="grow">设为管理员</el-button>
+              <el-button v-show="item.statecode==0" type="text" size="default" @click="showban=true,ban(item)">封禁</el-button>
+              <el-button v-show="item.statecode==0" type="text" size="default" @click="grow(item)">设为管理员</el-button>
             </td>
           </tr>
         </table>
         </div>
           <div class="demo-pagination-block" style="margin-top: 20px">
             <el-pagination
-                v-model:current-page="bancurrentPage"
-                v-model:page-size="banpageSize"
+                v-model:current-page="currentPage"
+                v-model:page-size="pageSize"
                 layout="prev, pager, next, jumper"
                 :total="userCountpage"
                 @current-change="handleCurrentChange"
@@ -125,10 +173,6 @@ const banhandleCurrentChange = (val: number) => {
         </div>
       </el-tab-pane>
       <el-tab-pane label="封禁用户">
-        <el-row>
-          <el-col :span="5"><el-input v-model="searchBanname" placeholder="请输入用户名进行搜索"></el-input></el-col>
-          <el-col :span="12"><el-button type="primary" @click="bansearch">搜索</el-button></el-col>
-        </el-row>
         <div style="margin-top: 20px">
           <table style="width: 1600px">
             <tr class="bantable-head">
@@ -151,7 +195,7 @@ const banhandleCurrentChange = (val: number) => {
         <div class="demo-pagination-block" style="margin-top: 20px">
           <el-pagination
               v-model:current-page="bancurrentPage"
-              v-model:page-size="pageSize"
+              v-model:page-size="banpageSize"
               layout="prev, pager, next, jumper"
               :total="banCountpage"
               @current-change="banhandleCurrentChange"
@@ -163,9 +207,6 @@ const banhandleCurrentChange = (val: number) => {
 </template>
 
 <style scoped>
-.headImg{
-  background-image: url('https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_640.jpg')
-}
 .table-head{
   background-color: #f2f2f2;
   width: 1600px;

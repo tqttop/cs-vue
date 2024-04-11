@@ -8,18 +8,16 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="/home">首页<span class="sr-only">(current)</span></a>
+          <router-link class="link" to="/">首页<span class="sr-only">(current)</span></router-link>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/document">资料下载</a>
+          <router-link class="link" to="/document">资料下载</router-link>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">管理</a>
+        <li  class="nav-item dropdown">
+          <a class="link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">管理</a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="/user">用户管理</a>
-            <a class="dropdown-item" href="/admin">管理员管理</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">开发中...</a>
+            <router-link class="dropdown-item" to="/user">用户管理</router-link>
+            <router-link class="dropdown-item" to="/admin">管理员管理</router-link>
           </div>
         </li>
       </ul>
@@ -57,5 +55,13 @@
   line-height: 300px;
   margin: 0;
 }
-
+.link{
+  text-decoration: none;
+  padding: 10px;
+  font-size: 18px;
+  margin-right: 10px;
+}
+.router-link-exact-active{
+  color: white;
+}
 </style>
