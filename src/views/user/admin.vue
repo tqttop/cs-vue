@@ -40,7 +40,7 @@ function remake() {
 
 async function fall(item) {
   try {
-    let res = await request.post('admin/', {name: item.name})
+    await request.post('admin/', {name: item.name})
   }catch(error){
     console.log(error)
   }
