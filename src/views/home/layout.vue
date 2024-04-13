@@ -4,7 +4,11 @@ import homeHead from '@/components/homeHead.vue'
 
 <template>
 <homeHead></homeHead>
-  <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <keep-alive >
+    <component :is="Component"></component>
+    </keep-alive>
+  </router-view>
 </template>
 
 <style scoped>

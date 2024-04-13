@@ -17,9 +17,12 @@ function updateCount() {
     seconds.value = Math.floor((timeDifference % (1000 * 60)) / 1000)
 
 }
+
 onMounted(() => {
   setInterval(updateCount, 1000);
-})
+  console.log('Mounted');
+});
+
 </script>
 
 <template>
@@ -30,7 +33,7 @@ onMounted(() => {
       </el-carousel-item>
     </el-carousel>
   </div>
-  <div class="floating-box">
+  <div class="floating-box" v-if="days">
       <div style="font-size: 16px;color: red;font-weight: bold">考研倒计时：</div>
       <p style="color:red">{{ days }}天{{ hours }}小时{{ minutes }}分{{ seconds }}秒</p>
   </div>

@@ -9,8 +9,8 @@ let searchname = ref('')
 async function getAdminList(item) {
   try {
   let res = await request.get(`admin/?page=${item}`)
-  adminList.value = res.data.data
-  adminCountpage.value = res.data.count
+  adminList.value = res.data
+  adminCountpage.value = res.count
 }catch(error){
   console.log(error)
 }}
@@ -22,15 +22,12 @@ const handleCurrentChange = (val) => {
 }
 
 async function search() {
-  try {
-    let res = await request.post('adminSearch/',
-    {name: searchname.value})
-    adminList.value = res.data.data
-    adminCountpage.value = res.data.count
-  }catch(error){
-    console.log(error)
-  }
+  let res = await request.post('adminSearch/',
+      {name: searchname.value})
+  adminList.value = res.data
+  adminCountpage.value = res.count
 }
+
 
 getAdminList(1)
 function remake() {
@@ -39,11 +36,7 @@ function remake() {
 }
 
 async function fall(item) {
-  try {
-    await request.post('admin/', {name: item.name})
-  }catch(error){
-    console.log(error)
-  }
+  await request.post('admin/', {name: item.name})
   getAdminList(currentPage.value)
 }
 </script>
@@ -67,7 +60,7 @@ async function fall(item) {
         <td>{{ item.phone }}</td>
         <td>{{ item.time}}</td>
         <td>
-          <el-button type="text" size="default" @click="fall(item)">取消管理员</el-button>
+          <el-button type="primary" size="small" @click="fall(item)">取消管理员</el-button>
         </td>
       </tr>
     </table>

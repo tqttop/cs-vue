@@ -8,7 +8,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <router-link class="link" to="/">首页<span class="sr-only">(current)</span></router-link>
+          <router-link class="link" to="/">首页</router-link>
         </li>
         <li class="nav-item">
           <router-link class="link" to="/document">资料下载</router-link>
@@ -22,7 +22,7 @@
         </li>
       </ul>
     </div>
-    <el-button type="primary" >注册</el-button>
+    <router-link to="/login"><el-button type="primary">登录/注册</el-button></router-link>
     <el-dropdown >
         <span class="el-dropdown-link" style="margin-right: 10px;margin-left: 10px;color: white">
           xxxx<i class="el-icon-arrow-down el-icon--right"></i>

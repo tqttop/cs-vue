@@ -13,15 +13,10 @@ let showban= ref(false)
 //展示列表
 
 async function getUserList(item) {
-  try {
   const res = await request.get(`/userList/?page=${item}`)
-  userList.value = toRaw(res.data.data)
-  userCountpage.value = res.data.count
-}catch (error) {
-  console.log(error)
-}}
-
-getUserList(currentPage.value)
+  userList.value = toRaw(res.data)
+  userCountpage.value = res.count
+}
 
 //展示点击的列表页面
 const handleCurrentChange = (val: number) => {
@@ -34,18 +29,13 @@ function ban(item) {
   banitem = item
 }
 async function checkBan(item) {
-  try {
-    const res = await request.post('/userList/', {
+    await request.post('/userList/', {
       name: item.name, reason: banReason.value
     })
-    alert(res.data.message)
     getUserList(currentPage.value)
     getbanList(1)
     banReason.value = ''
     showban.value = false
-  }catch (error) {
-    console.log(error)
-  }
 }
 //封禁用户列表功能
 let bancurrentPage = ref(1)
@@ -53,26 +43,20 @@ let banpageSize = ref(10)
 let banuserList = ref([])
 let banCountpage = ref(1)
 async function getbanList(pagenumber) {
-  try {
+
   const res = await request.get(`/banList/?page=${pagenumber}`)
-  banuserList.value = toRaw(res.data.data)
-  banCountpage.value = res.data.count
-}catch (error) {
-    console.log(error)
-  }}
-
-getbanList(1)
-
-function unban(item) {
-    request.post('/banList/', {
-     name: item.name
-    }).then(res => {
-    alert(res.data.message)
-    banhandleCurrentChange(bancurrentPage.value)
-  }).catch(error => {
-    console.log(error)
-  })
+  banuserList.value = res.data
+  banCountpage.value = res.count
 }
+
+onMounted(() => {getbanList(1),getUserList(currentPage.value)})
+
+
+async function unban(item) {
+    await request.post('/banList/', {name: item.name})
+    banhandleCurrentChange(bancurrentPage.value)
+}
+
 const banhandleCurrentChange = (val: number) => {
   bancurrentPage.value = val
   getbanList(val)
@@ -81,15 +65,12 @@ const banhandleCurrentChange = (val: number) => {
 
 let searchname = ref('')
 //搜索功能
-function search() {
-  request.post('/search/', {
-    name: searchname.value
-  }).then(res => {
-    userList.value = toRaw(res.data.data)
-    userCountpage.value = res.data.count
-}).catch(error => {
-    console.log(error)
-  })
+async function search() {
+   const res = await request.post('/search/', {
+    name: searchname.value})
+    userList.value = toRaw(res.data)
+    console.log(res.data)
+    userCountpage.value = res.count
 }
 
 function remake() {
@@ -98,15 +79,10 @@ function remake() {
 }
 
 
-function grow(item) {
-  request.post('/grow/', {
-    name: item.name
-  }).then(res => {
-    alert(res.data.message)
-    getUserList(currentPage.value)
-  }).catch(error => {
-    console.log(error)
-  })
+async function grow(item) {
+    await request.post('/grow/', {
+    name: item.name})
+    await getUserList(currentPage.value)
 }
 //利用 async和await
 </script>
@@ -146,8 +122,8 @@ function grow(item) {
             <td>{{ item.phone }}</td>
             <td>{{ item.time}}</td>
             <td>
-              <el-button v-show="item.statecode==0" type="text" size="default" @click="showban=true,ban(item)">封禁</el-button>
-              <el-button v-show="item.statecode==0" type="text" size="default" @click="grow(item)">设为管理员</el-button>
+              <el-button v-show="item.statecode==0" type="primary" size="small" @click="showban=true,ban(item)">封禁</el-button>
+              <el-button v-show="item.statecode==0" type="primary" size="small" @click="grow(item)">设为管理员</el-button>
             </td>
           </tr>
         </table>
@@ -188,7 +164,7 @@ function grow(item) {
               <td>{{ item.time}}</td>
               <td>{{ item.reason }}</td>
               <td>
-                <el-button type="text" size="default" @click="unban(item)">解封</el-button>
+                <el-button type="primary" size="small" @click="unban(item)">解封</el-button>
               </td>
             </tr>
           </table>

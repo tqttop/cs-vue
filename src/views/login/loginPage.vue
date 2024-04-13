@@ -3,6 +3,7 @@ import request from '@/utils/request'
 import { User, Lock } from '@element-plus/icons-vue'
 import { ref, watch } from 'vue'
 import router from "@/router/index.js";
+import {ElMessage} from "element-plus";
 const isRegister = ref(false)
 const form = ref()
 
@@ -65,15 +66,9 @@ const getCaptcha = async () => {
   await form.value.validate()
   const phone =new FormData()
   phone.append('phone', formModel.value.phone)
-  try {
-      const res = await request.post('/sendVerifycode/',phone
-    )
+  await request.post('/sendVerifycode/',phone)
     // 处理请求成功的响应
-    alert(res.data.message);
-  } catch (error) {
-    // 处理请求失败的情况
-    console.dir(error);
-  }
+
 
   if (countDown.value > 0) {
     return;
@@ -91,32 +86,25 @@ const getCaptcha = async () => {
 const register = async () => {
   // 注册成功之前，先进行校验，校验成功 → 请求，校验失败 → 自动提示
   await form.value.validate()
-  const time =ref(new Date())
-  try {
-    const res = await request.post('/register/', {'phone': formModel.value.phone, 'password': formModel.value.password, 'code': formModel.value.captcha, 'time': time.value})
-    alert(res.data.message);
-    isRegister.value = false
-  } catch (error) {
-    console.dir(error);
-  }
+  const time = ref(new Date())
+  await request.post('/register/', {
+    'phone': formModel.value.phone,
+    'password': formModel.value.password,
+    'code': formModel.value.captcha,
+    'time': time.value
+  })
+  isRegister.value = false
 }
-
 
 const login = async () => {
   await form.value.validate()
-  try {
     const res = await request.post('/login/', {'phone': formModel.value.phone, 'password': formModel.value.password})
-    alert(res.data.message);
-    if (res.data.success) {
+    if (res.code === 0 ) {
       router.push({ name: 'layout' })
       }
     else {
       router.push({ name: 'login' })
     }
-  }catch (error) {
-    console.dir(error);
-  }
-
 }
 
 // 切换的时候，重置表单内容
