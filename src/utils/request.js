@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useUserStore} from "@/store/user.js";
 import router from "@/router";
-
+const userStore = useUserStore();
 const baseURL='http://127.0.0.1:8000'
 const instance = axios.create({
     baseURL,
@@ -11,9 +11,9 @@ const instance = axios.create({
 instance.interceptors.request.use(config => {
     // Do something before request is sent
    // const userStore = useUserStore();
-   // if (userStore.token) {
-   //     config.headers.Authorization = userStore.token;
-   // }
+   if (userStore.token) {
+       config.headers.Authorization = userStore.token;
+   }
     return config;
 }, error => {
     // Do something with request error
@@ -29,13 +29,13 @@ instance.interceptors.response.use(response => {
     ElMessage.error(res.message);
     return Promise.reject(res.message);
 }, error => {
-    // if (error.response.code === 401) {
-    //     ElMessage.error('请先登录');
-    //     router.push('/login');
-    // }
-    ElMessage.error("服务器错误");
-    // Do something with response error
-    return Promise.reject(error);
+    if (error.response.status === 403 ) {
+        ElMessage.error('权限不足');
+    }
+    else {
+        ElMessage.error("服务器错误");
+        return Promise.reject(error);
+    }
 });
 
 export default instance;

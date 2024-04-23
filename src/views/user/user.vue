@@ -29,8 +29,8 @@ function ban(item) {
   banitem = item
 }
 async function checkBan(item) {
-    await request.post('/userList/', {
-      name: item.name, reason: banReason.value
+    await request.post('/banList/', {
+      phone: item.phone, reason: banReason.value
     })
     getUserList(currentPage.value)
     getbanList(1)
@@ -53,7 +53,7 @@ onMounted(() => {getbanList(1),getUserList(currentPage.value)})
 
 
 async function unban(item) {
-    await request.post('/banList/', {name: item.name})
+    await request.delete(`/banList/?phone=${item.phone}`)
     banhandleCurrentChange(bancurrentPage.value)
 }
 
@@ -66,8 +66,7 @@ const banhandleCurrentChange = (val: number) => {
 let searchname = ref('')
 //搜索功能
 async function search() {
-   const res = await request.post('/search/', {
-    name: searchname.value})
+   const res = await request.get(`/search/?name=${searchname.value}`)
     userList.value = toRaw(res.data)
     console.log(res.data)
     userCountpage.value = res.count
@@ -80,28 +79,19 @@ function remake() {
 
 
 async function grow(item) {
-    await request.post('/grow/', {
-    name: item.name})
+    await request.patch('/userList/', {
+    phone: item.phone})
+    await getUserList(currentPage.value)
+}
+async function down(item) {
+    await request.post('/userList/', {
+    phone: item.phone})
     await getUserList(currentPage.value)
 }
 //利用 async和await
 </script>
 
 <template>
-  <div>
-    <el-dropdown >
-        <span class="el-dropdown-link" style="margin-right: 10px;margin-left: 10px;color: white">
-          xxxx<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item>修改密码</el-dropdown-item>
-          <el-dropdown-item>成绩分析</el-dropdown-item>
-          <el-dropdown-item>注销</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
-  </div>
     <el-tabs type="border-card">
       <el-tab-pane label="用户列表">
           <el-row>
@@ -115,16 +105,20 @@ async function grow(item) {
             <th>name</th>
             <th>手机号</th>
             <th>注册时间</th>
+            <th>级别</th>
             <th>操作</th>
           </tr>
-          <tr class="table-body" v-for="item in userList" :key="item.name">
+          <tr class="table-body" v-for="item in userList" :key="item.index">
             <td>{{ item.name }}</td>
             <td>{{ item.phone }}</td>
             <td>{{ item.time}}</td>
+            <td>{{ item.role}}</td>
             <td>
-              <el-button v-show="item.statecode==0" type="primary" size="small" @click="showban=true,ban(item)">封禁</el-button>
-              <el-button v-show="item.statecode==0" type="primary" size="small" @click="grow(item)">设为管理员</el-button>
-            </td>
+              <el-button v-show="item.stateCode==='0'" type="primary" size="small" @click="showban=true;ban(item)">封禁</el-button>
+              <el-button v-if="item.stateCode==='0'" type="primary" size="small" @click="grow(item)">设为管理员</el-button>
+              <el-button v-if="item.stateCode==='2'" type="success" size="small" @click="down(item)">取消管理员</el-button>
+              <el-button v-if="item.stateCode==='6'" type="danger" size="small">此为超级管理员无法操作</el-button>
+            </td>state
           </tr>
         </table>
         </div>
@@ -189,17 +183,12 @@ async function grow(item) {
   height: 20px;
   text-align: center;
 }
-.table-head th{
-  width: 25%;
-}
+
 .table-body{
   border: 1px solid bisque;
-  width: 1600px;
+  width: 1400px;
   height: 20px;
   text-align: center;
-}
-.table-body td{
-  width: 25%;
 }
 .bantable-head{
   background-color: #f2f2f2;

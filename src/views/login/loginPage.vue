@@ -3,7 +3,7 @@ import request from '@/utils/request'
 import { User, Lock } from '@element-plus/icons-vue'
 import { ref, watch } from 'vue'
 import router from "@/router/index.js";
-import {ElMessage} from "element-plus";
+import {useUserStore} from "@/store/user.js";
 const isRegister = ref(false)
 const form = ref()
 
@@ -66,10 +66,12 @@ const getCaptcha = async () => {
   await form.value.validate()
   const phone =new FormData()
   phone.append('phone', formModel.value.phone)
-  await request.post('/sendVerifycode/',phone)
+  const res = await request.post('/sendVerifycode/',phone)
+  if (res.code === 0) {
+    ElMessage.success('验证码发送成功，请注意查收')
+  }
+
     // 处理请求成功的响应
-
-
   if (countDown.value > 0) {
     return;
   }
@@ -95,11 +97,13 @@ const register = async () => {
   })
   isRegister.value = false
 }
-
+const userStore = useUserStore()
 const login = async () => {
   await form.value.validate()
     const res = await request.post('/login/', {'phone': formModel.value.phone, 'password': formModel.value.password})
     if (res.code === 0 ) {
+      userStore.setToken(res)
+      ElMessage.success('登录成功')
       router.push({ name: 'layout' })
       }
     else {

@@ -1,5 +1,16 @@
 <script setup>
-
+import router from "@/router/index.js";
+import {useUserStore} from "@/store/user.js";
+const userStore = useUserStore();
+ async function logout(){
+  await ElMessageBox.confirm('确认退出登录吗？', '温馨提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  });
+  userStore.removeToken();
+  router.push({ name: 'login' })
+}
 </script>
 
 <template>
@@ -13,25 +24,21 @@
         <li class="nav-item">
           <router-link class="link" to="/document">资料下载</router-link>
         </li>
-        <li  class="nav-item dropdown">
-          <a class="link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">管理</a>
-          <div class="dropdown-menu">
-            <router-link class="dropdown-item" to="/user">用户管理</router-link>
-            <router-link class="dropdown-item" to="/admin">管理员管理</router-link>
-          </div>
+        <li  class="nav-item ">
+            <router-link class="link" to="/user">用户管理</router-link>
         </li>
       </ul>
     </div>
-    <router-link to="/login"><el-button type="primary">登录/注册</el-button></router-link>
-    <el-dropdown >
+    <router-link to="/login" v-if="!userStore.token"><el-button type="primary">登录/注册</el-button></router-link>
+    <el-dropdown  v-if="userStore.token">
         <span class="el-dropdown-link" style="margin-right: 10px;margin-left: 10px;color: white">
-          xxxx<i class="el-icon-arrow-down el-icon--right"></i>
+          {{ userStore.username }}<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item>修改密码</el-dropdown-item>
           <el-dropdown-item>成绩分析</el-dropdown-item>
-          <el-dropdown-item>注销</el-dropdown-item>
+          <el-dropdown-item @click="logout">注销</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>

@@ -8,7 +8,6 @@ const userStore = useUserStore()
 <div><a href="/admin">管理员</a></div>
     <div>文档</div>
 <p>{{ userStore.token }}</p>
-  <button @click="userStore.setToken('aaaaaaa')">登录</button>
 </template>
 
 <style scoped>

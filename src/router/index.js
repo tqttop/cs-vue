@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-
+import { useUserStore}  from "@/store/user.js";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,11 +8,18 @@ const router = createRouter({
       {path:'/',name:'layout',component: () => import('@/views/home/layout.vue'),redirect: 'home',
           children: [
               {path:'/document',name:'document',component: () => import('@/views/widgets/document.vue')},
-              {path:'/admin',name:'admin',component: () => import('@/views/user/admin.vue')},
               {path:'/user',name:'user',component: () => import('@/views/user/user.vue')},
               {path:'/home',name:'home',component: () => import('@/views/home/homePage.vue')},
           ]},
   ]
 })
+router.beforeEach((to,next) => {
+  const userStore = useUserStore();
+  if (!userStore.token && to.path!== '/login' && to.path !== '/home') return '/login'
+    if (to.path === '/user'&& userStore.role!== 'admin'&&userStore.role!== 'root') {
+        ElMessage.error('您没有权限访问该页面')
+        next(false)
 
+  }}
+ )
 export default router
