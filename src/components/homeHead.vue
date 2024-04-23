@@ -32,11 +32,12 @@ const userStore = useUserStore();
     <router-link to="/login" v-if="!userStore.token"><el-button type="primary">登录/注册</el-button></router-link>
     <el-dropdown  v-if="userStore.token">
         <span class="el-dropdown-link" style="margin-right: 10px;margin-left: 10px;color: white">
-          {{ userStore.username }}<i class="el-icon-arrow-down el-icon--right"></i>
+      <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>
+          <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item>修改密码</el-dropdown-item>
+          <router-link to="/center"><el-dropdown-item>个人中心</el-dropdown-item></router-link>
           <el-dropdown-item>成绩分析</el-dropdown-item>
           <el-dropdown-item @click="logout">注销</el-dropdown-item>
         </el-dropdown-menu>

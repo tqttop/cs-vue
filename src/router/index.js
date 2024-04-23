@@ -11,8 +11,11 @@ const router = createRouter({
               {path:'/user',name:'user',component: () => import('@/views/user/user.vue')},
               {path:'/home',name:'home',component: () => import('@/views/home/homePage.vue')},
           ]},
+      {path: '/center' ,name:'center',component: () => import('@/views/widgets/personalCenter.vue')}
   ]
 })
+
+
 router.beforeEach((to,next) => {
   const userStore = useUserStore();
   if (!userStore.token && to.path!== '/login' && to.path !== '/home') return '/login'
