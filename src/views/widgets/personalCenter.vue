@@ -1,10 +1,14 @@
-<script setup>
+<script  lang="ts" setup>
 import request from '@/utils/request'
 import {useUserStore} from "@/store/user.js";
 const userStore = useUserStore();
 import { ref } from 'vue'
 import {Lock} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
+import { ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
+import type { UploadProps } from 'element-plus'
+
 const form = ref()
 const pwdform= ref()
 const nameModel = ref({
@@ -65,7 +69,7 @@ const centerDialogVisible = ref(false)
 const centerDialogVisible1 = ref(false)
 async function nameEdit() {
   await form.value.validate()
-  await request.patch('change/', { name: nameModel.value.newName })
+  await request.patch('change/name/', { name: nameModel.value.newName })
   ElMessage.success('修改成功')
   centerDialogVisible.value = false
   userStore.setName(nameModel.value.newName)
@@ -80,7 +84,31 @@ async function passwordEdit() {
   router.push('/home')
 }
 
+  const imageUrl = ref('')
+
+  const handleAvatarSuccess: UploadProps['onSuccess'] = (
+  response,
+  uploadFile
+  ) => {
+  imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+  userStore.setImg(imageUrl.value)
+  ElMessage.success('上传成功')
+}
+
+  const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  if (rawFile.type !== 'image/jpeg') {
+  ElMessage.error('Avatar picture must be JPG format!')
+  return false
+} else if (rawFile.size / 1024 / 1024 > 2) {
+  ElMessage.error('Avatar picture size can not exceed 2MB!')
+  return false
+}
+  return true
+}
 </script>
+
+
+
 
 <template>
     <el-descriptions title="个人中心" :column="3" border>
@@ -174,12 +202,61 @@ async function passwordEdit() {
       </template>
     </el-dialog>
   </el-form>
-  </template>
-  <style scoped>
-    :deep(.my-label) {
-      background: var(--el-color-success-light-9) !important;
-    }
-    :deep(.my-content) {
-      background: var(--el-color-danger-light-9);
-    }
-  </style>
+
+
+<div style="margin-top: 20px">
+  <el-divider>头像上传</el-divider>
+  <el-upload
+      class="avatar-uploader"
+      action="http://localhost:8000/change/img/"
+      :headers="{'Authorization':userStore.token}"
+      :show-file-list="true"
+      :on-success="handleAvatarSuccess"
+      :before-upload="beforeAvatarUpload"
+  >
+    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+    <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+  </el-upload>
+</div>
+</template>
+
+
+<style scoped>
+:deep(.my-label) {
+  background: var(--el-color-success-light-9) !important;
+}
+:deep(.my-content) {
+  background: var(--el-color-danger-light-9);
+}
+
+.avatar-uploader .avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+</style>
+
+
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
+}
+</style>

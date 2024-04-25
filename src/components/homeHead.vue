@@ -32,7 +32,7 @@ const userStore = useUserStore();
     <router-link to="/login" v-if="!userStore.token"><el-button type="primary">登录/注册</el-button></router-link>
     <el-dropdown  v-if="userStore.token">
         <span class="el-dropdown-link" style="margin-right: 10px;margin-left: 10px;color: white">
-      <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>
+          <el-avatar :src="userStore.img"/>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
       <template #dropdown>

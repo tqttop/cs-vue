@@ -103,7 +103,6 @@ const login = async () => {
     const res = await request.post('/login/', {'phone': formModel.value.phone, 'password': formModel.value.password})
     if (res.code === 0 ) {
       userStore.setToken(res)
-      userStore.setName(res.username)
       ElMessage.success('登录成功')
       router.push({ name: 'layout' })
       }

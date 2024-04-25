@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useUserStore} from "@/store/user.js";
-import router from "@/router";
 const userStore = useUserStore();
 const baseURL='http://127.0.0.1:8000'
 const instance = axios.create({

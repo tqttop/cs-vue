@@ -10,8 +10,9 @@ const router = createRouter({
               {path:'/document',name:'document',component: () => import('@/views/widgets/document.vue')},
               {path:'/user',name:'user',component: () => import('@/views/user/user.vue')},
               {path:'/home',name:'home',component: () => import('@/views/home/homePage.vue')},
+              {path: '/detail' ,name:'detail',component: () => import('@/views/widgets/detail.vue')}
           ]},
-      {path: '/center' ,name:'center',component: () => import('@/views/widgets/personalCenter.vue')}
+      {path: '/center' ,name:'center',component: () => import('@/views/widgets/personalCenter.vue')},
   ]
 })
 
