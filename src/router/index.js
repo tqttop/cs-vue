@@ -7,12 +7,11 @@ const router = createRouter({
       {path: '/login',name:'login',component: () => import('@/views/login/loginPage.vue')},
       {path:'/',name:'layout',component: () => import('@/views/home/layout.vue'),redirect: 'home',
           children: [
-              {path:'/document',name:'document',component: () => import('@/views/widgets/document.vue')},
+              {path:'/document',name:'document',component: () => import('@/views/home/document.vue')},
               {path:'/user',name:'user',component: () => import('@/views/user/user.vue')},
               {path:'/home',name:'home',component: () => import('@/views/home/homePage.vue')},
-              {path: '/detail' ,name:'detail',component: () => import('@/views/widgets/detail.vue')}
           ]},
-      {path: '/center' ,name:'center',component: () => import('@/views/widgets/personalCenter.vue')},
+      {path: '/detail/:title' ,name:'detail',component: () => import('@/views/widgets/detail.vue')},
   ]
 })
 
