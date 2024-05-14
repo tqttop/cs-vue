@@ -14,7 +14,7 @@ const userStore = useUserStore();
 </script>
 
 <template>
-  <div class="navbar navbar-expand-lg  bg-light navbar-light,menuRight headImg" >
+  <div class="navbar navbar-expand-lg  bg-light navbar-light,menuRight headImg"  >
     <span class="navbar-brand headWord"  >考研服务平台</span>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
@@ -22,10 +22,13 @@ const userStore = useUserStore();
           <router-link class="link" to="/">首页</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="link" to="/document">资料下载</router-link>
+          <router-link class="link" to="/document">学习资料</router-link>
         </li>
         <li  class="nav-item ">
             <router-link class="link" to="/user">用户管理</router-link>
+        </li>
+        <li  class="nav-item ">
+            <router-link class="link" to="/chat">论坛</router-link>
         </li>
       </ul>
     </div>
