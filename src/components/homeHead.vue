@@ -28,7 +28,7 @@ const userStore = useUserStore();
             <router-link class="link" to="/user">用户管理</router-link>
         </li>
         <li  class="nav-item ">
-            <router-link class="link" to="/chat">论坛</router-link>
+            <router-link class="link" to="/ArticleList">论坛</router-link>
         </li>
       </ul>
     </div>
@@ -41,7 +41,6 @@ const userStore = useUserStore();
       <template #dropdown>
         <el-dropdown-menu>
           <router-link to="/center"><el-dropdown-item>个人中心</el-dropdown-item></router-link>
-          <el-dropdown-item>成绩分析</el-dropdown-item>
           <el-dropdown-item @click="logout">注销</el-dropdown-item>
         </el-dropdown-menu>
       </template>

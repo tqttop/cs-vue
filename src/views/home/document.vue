@@ -42,7 +42,7 @@ getData()
 .header{
   border : 1px solid red;
   flex: 0 0 calc(25% - 10px);
-  margin-right: 10px;
+  margin-right: 30px;
   margin-bottom: 30px;
   img{
     width: 100%;

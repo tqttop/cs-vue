@@ -95,6 +95,7 @@ const register = async () => {
     'code': formModel.value.captcha,
     'time': time.value
   })
+  ElMessage.success('注册成功')
   isRegister.value = false
 }
 const userStore = useUserStore()
