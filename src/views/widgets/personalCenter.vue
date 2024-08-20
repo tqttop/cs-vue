@@ -25,7 +25,7 @@ const rules1 = {
     { pattern: /^\S{2,8}$/, message: "长度在 2 到 8 个字符", trigger: "blur" },
     {
       validator: (rule, value, callback) => {
-        // 判断 value 和 当前 form 中收集的 password 是否一致
+        // 判断 value 和 当前 form 中name是否一致
         if (value === userStore.username) {
           callback(new Error('新旧用户名不能相同'))
         } else {

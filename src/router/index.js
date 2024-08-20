@@ -29,6 +29,8 @@ router.beforeEach((to,next) => {
         ElMessage.error('您没有权限访问该页面')
         next(false)
 
-  }}
+  }if (to.path === '/ArticleList'&& !userStore.token) {
+          ElMessage.error('请先登录')
+          next(false)}}
  )
 export default router

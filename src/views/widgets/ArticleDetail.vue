@@ -69,7 +69,7 @@ async function handledelete() {
           <el-divider />
           <div> {{data.content}}</div>
           <div class="actions">
-            <el-button type="text"  @click="handleLike"><el-icon :class="{ 'like':!like }" ><Pointer /></el-icon>{{ data.goodCount }}</el-button>
+            <el-button type="text"  @click="handleLike" ><el-icon :class="{ 'like':!like }" ><Pointer /></el-icon>{{ data.goodCount }}</el-button>
             <el-button type="text" v-if="userStore.role==='admin'||userStore.role==='root'||userStore.username===data.author" @click="handledelete">删除</el-button>
           </div>
         </div>

@@ -20,7 +20,6 @@ instance.interceptors.request.use(config => {
 });
 
 instance.interceptors.response.use(response => {
-    // Do something with response data
     const res = response.data;
     if (res.code === 0) {
         return res

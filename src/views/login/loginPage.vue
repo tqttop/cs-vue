@@ -14,17 +14,6 @@ const formModel = ref({
   repassword: '',
   captcha: ''
 })
-// 整个表单的校验规则
-// 1. 非空校验 required: true      message消息提示，  trigger触发校验的时机 blur change
-// 2. 长度校验 min:xx, max: xx
-// 3. 正则校验 pattern: 正则规则    \S 非空字符
-// 4. 自定义校验 => 自己写逻辑校验 (校验函数)
-//    validator: (rule, value, callback)
-//    (1) rule  当前校验规则相关的信息
-//    (2) value 所校验的表单元素目前的表单值
-//    (3) callback 无论成功还是失败，都需要 callback 回调
-//        - callback() 校验成功
-//        - callback(new Error(错误信息)) 校验失败
 
 const rules1 = {
   phone: [
@@ -71,7 +60,7 @@ const getCaptcha = async () => {
     ElMessage.success('验证码发送成功，请注意查收')
   }
 
-    // 处理请求成功的响应
+  // 处理请求成功的响应
   if (countDown.value > 0) {
     return;
   }
@@ -101,15 +90,15 @@ const register = async () => {
 const userStore = useUserStore()
 const login = async () => {
   await form.value.validate()
-    const res = await request.post('/login/', {'phone': formModel.value.phone, 'password': formModel.value.password})
-    if (res.code === 0 ) {
-      userStore.setToken(res)
-      ElMessage.success('登录成功')
-      router.push({ name: 'layout' })
-      }
-    else {
-      router.push({ name: 'login' })
-    }
+  const res = await request.post('/login/', {'phone': formModel.value.phone, 'password': formModel.value.password})
+  if (res.code === 0 ) {
+    userStore.setToken(res)
+    ElMessage.success('登录成功')
+    router.push({ name: 'layout' })
+  }
+  else {
+    router.push({ name: 'login' })
+  }
 }
 
 // 切换的时候，重置表单内容
@@ -123,23 +112,6 @@ watch(isRegister, () => {
 </script>
 
 <template>
-  <!--
-    1. 结构相关
-      el-row表示一行，一行分成24份
-       el-col表示列
-       (1) :span="12"  代表在一行中，占12份 (50%)
-       (2) :span="6"   表示在一行中，占6份  (25%)
-       (3) :offset="3" 代表在一行中，左侧margin份数
-
-       el-form 整个表单组件
-       el-form-item 表单的一行 （一个表单域）
-       el-input 表单元素（输入框）
-    2. 校验相关
-       (1) el-form => :model="ruleForm"      绑定的整个form的数据对象 { xxx, xxx, xxx }
-       (2) el-form => :rules="rules"         绑定的整个rules规则对象  { xxx, xxx, xxx }
-       (3) 表单元素 => v-model="ruleForm.xxx" 给表单元素，绑定form的子属性
-       (4) el-form-item => prop配置生效的是哪个校验规则 (和rules中的字段要对应)
-  -->
   <!-- 在页面顶部添加一个固定定位的容器 -->
   <el-row class="login-page">
     <el-col :span="12" class="bg"></el-col>
@@ -270,7 +242,7 @@ watch(isRegister, () => {
   background-color: #fff;
   .bg {
     background:
-    url('@/assets/register.jpg') no-repeat center / cover;
+        url('@/assets/register.jpg') no-repeat center / cover;
     border-radius: 0 20px 20px 0;
   }
   .form {
